@@ -1,106 +1,45 @@
 const { Op } = require('sequelize');
 const Historial = require('../models/Historial');
-const InformacionMascota = require('../models/InformacionMascota');
 
 exports.createHistorial = async (req, res) => {
   try {
-    const { nombreMascota, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, nombreDueño, doctorAtendio, informacionMascota } = req.body;
+    const { nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion } = req.body;
     
     // Validar campos NOT NULL
-    if (!nombreMascota || !anamnesis || !sintomasSignos || !tratamiento || !diagnostico || !nombreDueño || !doctorAtendio) {
-      return res.status(400).json({ error: 'Todos los campos (nombreMascota, anamnesis, sintomasSignos, tratamiento, diagnostico, nombreDueño, doctorAtendio) son obligatorios' });
+    if (!nombreMascota || !raza || !especie || !sexo || !nombreDueno || !carnetIdentidad || !telefono || !direccion) {
+      return res.status(400).json({ error: 'Los campos nombreMascota, raza, especie, sexo, nombreDueno, carnetIdentidad, telefono y direccion son obligatorios' });
     }
     
-    // Validar campos NOT NULL de informacionMascota
-    if (informacionMascota && (!informacionMascota.edad || !informacionMascota.peso || !informacionMascota.sexo || informacionMascota.castrado === undefined || informacionMascota.esterilizado === undefined)) {
-      return res.status(400).json({ error: 'Todos los campos de informacionMascota (edad, peso, sexo, castrado, esterilizado) son obligatorios' });
-    }
-    
-    const historial = await Historial.create({
-      nombreMascota,
-      anamnesis,
-      sintomasSignos,
-      tratamiento,
-      diagnostico,
-      cita,
-      nombreDueño,
-      doctorAtendio,
-    });
-    
-    if (informacionMascota) {
-      await InformacionMascota.create({
-        ...informacionMascota,
-        idH: historial.id,
-      });
-    }
-    
-    const fullHistorial = await Historial.findByPk(historial.id, {
-      include: InformacionMascota,
-    });
-    res.status(201).json(fullHistorial);
+    const newHistorial = await Historial.create({ nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion });
+    res.status(201).json(newHistorial);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-exports.getHistoriales = async (req, res) => {
+exports.getHistorial = async (req, res) => {
   try {
-    const historiales = await Historial.findAll({
-      include: InformacionMascota,
-    });
-    res.status(200).json(historiales);
+    const historial = await Historial.findByPk(req.params.id);
+    if (!historial) return res.status(404).json({ message: 'Historial no encontrado' });
+    res.json(historial);
   } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-
-exports.getHistorialById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const historial = await Historial.findByPk(id, {
-      include: InformacionMascota,
-    });
-    if (historial) {
-      res.status(200).json(historial);
-    } else {
-      res.status(404).json({ error: 'Historial no encontrado' });
-    }
-  } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
 exports.updateHistorial = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { nombreMascota, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, nombreDueño, doctorAtendio, informacionMascota } = req.body;
+    const { nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion } = req.body;
+    const historial = await Historial.findByPk(req.params.id);
+    if (!historial) return res.status(404).json({ message: 'Historial no encontrado' });
     
-    // Validar campos NOT NULL
-    if (!nombreMascota || !anamnesis || !sintomasSignos || !tratamiento || !diagnostico || !nombreDueño || !doctorAtendio) {
-      return res.status(400).json({ error: 'Todos los campos (nombreMascota, anamnesis, sintomasSignos, tratamiento, diagnostico, nombreDueño, doctorAtendio) son obligatorios' });
+    // Validar campos NOT NULL antes de actualizar
+    if (!nombreMascota || !raza || !especie || !sexo || !nombreDueno || !carnetIdentidad || !telefono || !direccion) {
+      return res.status(400).json({ error: 'Los campos nombreMascota, raza, especie, sexo, nombreDueno, carnetIdentidad, telefono y direccion son obligatorios' });
     }
     
-    // Validar campos NOT NULL de informacionMascota
-    if (informacionMascota && (!informacionMascota.edad || !informacionMascota.peso || !informacionMascota.sexo || informacionMascota.castrado === undefined || informacionMascota.esterilizado === undefined)) {
-      return res.status(400).json({ error: 'Todos los campos de informacionMascota (edad, peso, sexo, castrado, esterilizado) son obligatorios' });
-    }
-    
-    const [updated] = await Historial.update(
-      { nombreMascota, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, nombreDueño, doctorAtendio },
-      { where: { id } }
-    );
-    
-    if (updated) {
-      if (informacionMascota) {
-        await InformacionMascota.update(informacionMascota, { where: { idH: id } });
-      }
-      const updatedHistorial = await Historial.findByPk(id, {
-        include: InformacionMascota,
-      });
-      res.status(200).json(updatedHistorial);
-    } else {
-      res.status(404).json({ error: 'Historial no encontrado' });
-    }
+    await historial.update({ nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion });
+    res.json(historial);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -108,43 +47,49 @@ exports.updateHistorial = async (req, res) => {
 
 exports.deleteHistorial = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    // Elimina primero la información relacionada
-    await InformacionMascota.destroy({ where: { idH: id } });
-
-    // Luego elimina el historial
-    const deleted = await Historial.destroy({ where: { id } });
-
-    if (deleted) {
-      res.status(204).send();
-    } else {
-      res.status(404).json({ error: 'Historial no encontrado' });
-    }
+    const historial = await Historial.findByPk(req.params.id);
+    if (!historial) return res.status(404).json({ message: 'Historial no encontrado' });
+    await historial.destroy();
+    res.json({ message: 'Historial eliminado' });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-exports.searchHistorialByNombreMascota = async (req, res) => {
+exports.getAllHistoriales = async (req, res) => {
   try {
-    const { nombreMascota } = req.query;
+    const historiales = await Historial.findAll();
+    res.status(200).json(historiales);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.searchHistorialByText = async (req, res) => {
+  try {
+    const { texto } = req.query;
     
-    if (!nombreMascota) {
-      return res.status(400).json({ error: 'El parámetro nombreMascota es obligatorio' });
+    // Validar que se proporcione un texto para buscar
+    if (!texto) {
+      return res.status(400).json({ error: 'El parámetro texto es obligatorio para la búsqueda' });
     }
     
     const historiales = await Historial.findAll({
       where: {
-        nombreMascota: {
-          [Op.iLike]: `%${nombreMascota}%` // Búsqueda insensible a mayúsculas/minúsculas
-        }
-      },
-      include: InformacionMascota,
+        [Op.or]: [
+          { nombreMascota: { [Op.like]: `%${texto}%` } },
+          { nombreDueno: { [Op.like]: `%${texto}%` } },
+          { carnetIdentidad: { [Op.like]: `%${texto}%` } },
+          { telefono: { [Op.like]: `%${texto}%` } },
+          { direccion: { [Op.like]: `%${texto}%` } }
+        ]
+      }
     });
-    
+    if (historiales.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron historiales con el texto proporcionado' });
+    }
     res.status(200).json(historiales);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };

@@ -4,10 +4,10 @@ const historialController = require('../controllers/historialController');
 const authMiddleware = require('../middleware/auth');
 
 router.post('/', authMiddleware, historialController.createHistorial);
-router.get('/', authMiddleware, historialController.getHistoriales);
-router.get('/search', authMiddleware, historialController.searchHistorialByNombreMascota);
-router.get('/:id', authMiddleware, historialController.getHistorialById);
+router.get('/:id', authMiddleware, historialController.getHistorial);
 router.put('/:id', authMiddleware, historialController.updateHistorial);
 router.delete('/:id', authMiddleware, historialController.deleteHistorial);
+router.get('/', authMiddleware, historialController.getAllHistoriales);
+router.get('/search', authMiddleware, historialController.searchHistorialByText);
 
 module.exports = router;

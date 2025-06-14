@@ -3,16 +3,16 @@ const Usuario = require('../models/Usuario');
 
 exports.createUsuario = async (req, res) => {
   try {
-    const { nombre, usuario, password, rol } = req.body;
+    const { nombre, correo, usuario, password, rol } = req.body;
     
     // Validar campos NOT NULL
     if (!nombre || !usuario || !password || !rol) {
-      return res.status(400).json({ error: 'Todos los campos (nombre, usuario, password, rol) son obligatorios' });
+      return res.status(400).json({ error: 'Todos los campos (nombre, correo, usuario, password, rol) son obligatorios' });
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUsuario = await Usuario.create({ nombre, usuario, password: hashedPassword, rol });
-    res.status(201).json({ id: newUsuario.id, nombre: newUsuario.nombre, usuario: newUsuario.usuario, rol: newUsuario.rol });
+    const newUsuario = await Usuario.create({ nombre, correo, usuario, password: hashedPassword, rol });
+    res.status(201).json({ id: newUsuario.id, nombre: newUsuario.nombre, correo: newUsuario.correo, usuario: newUsuario.usuario, rol: newUsuario.rol });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -30,14 +30,14 @@ exports.getUsuarios = async (req, res) => {
 exports.updateUsuario = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, usuario, password, rol } = req.body;
+    const { nombre, correo, usuario, password, rol } = req.body;
     
     // Validar campos NOT NULL
-    if (!nombre || !usuario || !rol) {
-      return res.status(400).json({ error: 'Los campos nombre, usuario y rol son obligatorios' });
+    if (!nombre || !correo || !usuario || !rol) {
+      return res.status(400).json({ error: 'Los campos nombre, correo, usuario y rol son obligatorios' });
     }
     
-    const usuarioData = { nombre, usuario, rol };
+    const usuarioData = { nombre, correo, usuario, rol };
     if (password) {
       usuarioData.password = await bcrypt.hash(password, 10);
     }

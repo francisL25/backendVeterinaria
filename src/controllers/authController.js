@@ -9,6 +9,8 @@ const blacklistedTokens = new Set();
 exports.login = async (req, res) => {
   try {
     const { usuario, password } = req.body;
+    console.log(`Intento de inicio de sesión para el usuario: ${usuario}`);
+    console.log(`Contraseña proporcionada: ${password}`);
     
     // Validar campos NOT NULL
     if (!usuario || !password) {
