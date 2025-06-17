@@ -10,7 +10,6 @@ exports.login = async (req, res) => {
   try {
     const { usuario, password } = req.body;
     console.log(`Intento de inicio de sesión para el usuario: ${usuario}`);
-    console.log(`Contraseña proporcionada: ${password}`);
     
     // Validar campos NOT NULL
     if (!usuario || !password) {
@@ -18,6 +17,7 @@ exports.login = async (req, res) => {
     }
     
     const user = await Usuario.findOne({ where: { usuario } });
+    
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }

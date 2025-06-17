@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const Historial = require('../models/Historial');
+const HistorialFecha = require('../models/HistorialFecha');
 
 exports.createHistorial = async (req, res) => {
   try {
@@ -11,6 +12,31 @@ exports.createHistorial = async (req, res) => {
     }
 
     const newHistorial = await Historial.create({ nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion });
+    // Crear un HistorialFecha inicial asociado al nuevo Historial
+    await HistorialFecha.create({
+      idH: newHistorial.id,
+      nombreMascota,
+      raza,
+      especie,
+      fechaNacimiento,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion,
+      peso: req.body.peso, 
+      castrado: req.body.castrado, 
+      esterilizado: req.body.esterilizado,
+      seniaParticular: req.body.seniaParticular, 
+      anamnesis: req.body.anamnesis, 
+      sintomasSignos: req.body.sintomasSignos, 
+      tratamiento: req.body.tratamiento, 
+      diagnostico: req.body.diagnostico, 
+      cita: req.body.cita, 
+      doctorAtendio: req.body.doctorAtendio, 
+      fechaHistorial: req.body.fechaHistorial
+    });
+    
     res.status(201).json(newHistorial);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -68,8 +94,7 @@ exports.getAllHistoriales = async (req, res) => {
 exports.searchHistorialByText = async (req, res) => {
   try {
     const { texto } = req.query;
-    console.log('Texto de búsqueda:', texto);
-
+    console.log(`Búsqueda de historial con texto: ${texto}`);
     // Validar que se proporcione un texto para buscar
     if (!texto) {
       return res.status(400).json({ error: 'El parámetro texto es obligatorio para la búsqueda' });

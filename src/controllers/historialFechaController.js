@@ -4,25 +4,96 @@ const Historial = require('../models/Historial');
 
 exports.createHistorialFecha = async (req, res) => {
   try {
-    const { idH, nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion, peso, castrado, esterilizado, seniaParticular, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, doctorAtendio, fechaHistorial } = req.body;
-    
-    // Validar campos NOT NULL
-    if (!idH || !nombreMascota || !raza || !especie || !sexo || !nombreDueno || !carnetIdentidad || !telefono || !direccion || !peso || !castrado || !esterilizado || !cita || !fechaHistorial) {
-      return res.status(400).json({ error: 'Los campos idH, nombreMascota, raza, especie, sexo, nombreDueno, carnetIdentidad, telefono, direccion, peso, castrado, esterilizado, cita y fechaHistorial son obligatorios' });
+    const {
+      idH,
+      nombreMascota,
+      raza,
+      especie,
+      fechaNacimiento,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion,
+      peso,
+      castrado,
+      esterilizado,
+      seniaParticular,
+      anamnesis,
+      sintomasSignos,
+      tratamiento,
+      diagnostico,
+      cita,
+      doctorAtendio,
+      fechaHistorial
+    } = req.body;
+
+    // Validación de campos obligatorios
+    const camposObligatorios = {
+      idH,
+      nombreMascota,
+      raza,
+      especie,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion,
+      peso,
+      castrado,
+      esterilizado,
+      cita,
+      fechaHistorial
+    };
+
+    const camposFaltantes = Object.entries(camposObligatorios)
+      .filter(([_, valor]) => valor === undefined || valor === null || valor === '')
+      .map(([clave]) => clave);
+
+    if (camposFaltantes.length > 0) {
+      return res.status(400).json({
+        error: `Los siguientes campos son obligatorios: ${camposFaltantes.join(', ')}`
+      });
     }
-    
-    // Verificar que el Historial asociado exista
+
+    // Validar existencia de historial principal
     const historial = await Historial.findByPk(idH);
     if (!historial) {
       return res.status(404).json({ error: 'Historial asociado no encontrado' });
     }
-    
-    const newHistorialFecha = await HistorialFecha.create({ idH, nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion, peso, castrado, esterilizado, seniaParticular, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, doctorAtendio, fechaHistorial });
-    res.status(201).json(newHistorialFecha);
+
+    // Crear nuevo registro HistorialFecha
+    const nuevoHistorialFecha = await HistorialFecha.create({
+      idH,
+      nombreMascota,
+      raza,
+      especie,
+      fechaNacimiento,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion,
+      peso,
+      castrado,
+      esterilizado,
+      seniaParticular,
+      anamnesis,
+      sintomasSignos,
+      tratamiento,
+      diagnostico,
+      cita,
+      doctorAtendio,
+      fechaHistorial
+    });
+
+    return res.status(201).json(nuevoHistorialFecha);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Error al crear HistorialFecha:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
 
 exports.getHistorialFecha = async (req, res) => {
   try {
