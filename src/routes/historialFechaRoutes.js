@@ -3,11 +3,12 @@ const router = express.Router();
 const historialFechaController = require('../controllers/historialFechaController');
 const authMiddleware = require('../middleware/auth');
 
-// ✅ Rutas más específicas primero
+// ✅ Rutas específicas primero
 router.get('/idH/:idH', authMiddleware, historialFechaController.getHistorialesByIdH);
-router.get('/', authMiddleware, historialFechaController.getAllHistorialFechas);
+router.get('/ultimo/:idH', authMiddleware, historialFechaController.getUltimoHistorialFechaByIdH);
 
-// ✅ Rutas con parámetro general al final
+// ✅ Rutas generales después
+router.get('/', authMiddleware, historialFechaController.getAllHistorialFechas);
 router.post('/:idH', authMiddleware, historialFechaController.createHistorialFecha);
 router.get('/:id', authMiddleware, historialFechaController.getHistorialFecha);
 router.put('/:id', authMiddleware, historialFechaController.updateHistorialFecha);

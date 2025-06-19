@@ -172,3 +172,27 @@ exports.getHistorialesByIdH = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getUltimoHistorialFechaByIdH = async (req, res) => {
+  try {
+    const { idH } = req.params;
+
+    if (!idH) {
+      return res.status(400).json({ error: 'El parámetro idH es obligatorio' });
+    }
+
+    const ultimoHistorial = await HistorialFecha.findOne({
+      where: { idH },
+      order: [['fechaHistorial', 'DESC']],
+    });
+
+    if (!ultimoHistorial) {
+      return res.status(404).json({ message: 'No se encontró historial para el idH proporcionado' });
+    }
+
+    res.status(200).json(ultimoHistorial);
+  } catch (error) {
+    console.error('Error al obtener el último historial:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
