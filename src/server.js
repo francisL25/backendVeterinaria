@@ -5,6 +5,8 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const historialRoutes = require('./routes/historialRoutes');
 const historialFechaRoutes = require('./routes/historialFechaRoutes');
 const authRoutes = require('./routes/authRoutes');
+const documentoRoutes = require('./routes/documentoRoutes');
+
 
 const app = express();
 
@@ -17,6 +19,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/historialFecha', historialFechaRoutes);
+app.use('/api/documentos', documentoRoutes);
+
 
 
 // Sincronizar base de datos y arrancar servidor
