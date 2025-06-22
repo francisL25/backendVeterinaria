@@ -96,6 +96,12 @@ const HistorialFecha = sequelize.define('HistorialFecha', {
   updatedAt: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+    receta: {
+    type: DataTypes.TEXT
+  },
+    recomendacion: {
+    type: DataTypes.TEXT
   }
 }, {
   tableName: "historialFecha",

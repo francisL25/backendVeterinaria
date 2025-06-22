@@ -25,7 +25,9 @@ exports.createHistorialFecha = async (req, res) => {
       diagnostico,
       cita,
       doctorAtendio,
-      fechaHistorial
+      fechaHistorial,
+      receta,
+      recomendacion
     } = req.body;
 
     // Validación de campos obligatorios
@@ -84,7 +86,9 @@ exports.createHistorialFecha = async (req, res) => {
       diagnostico,
       cita,
       doctorAtendio,
-      fechaHistorial
+      fechaHistorial,
+      receta,
+      recomendacion
     });
 
     return res.status(201).json(nuevoHistorialFecha);
@@ -160,7 +164,8 @@ exports.getHistorialesByIdH = async (req, res) => {
     
     // Buscar todos los HistorialFecha asociados al idH
     const historialFechas = await HistorialFecha.findAll({
-      where: { idH }
+      where: { idH },
+      order: [['fechaHistorial', 'DESC']]
     });
     
     if (historialFechas.length === 0) {

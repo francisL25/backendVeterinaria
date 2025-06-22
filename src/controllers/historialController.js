@@ -4,6 +4,7 @@ const HistorialFecha = require('../models/HistorialFecha');
 
 exports.createHistorial = async (req, res) => {
   try {
+    console.log('Creando nuevo historial con datos:', req.body);
     const { nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion } = req.body;
 
     // Validar campos NOT NULL
@@ -84,7 +85,9 @@ exports.deleteHistorial = async (req, res) => {
 
 exports.getAllHistoriales = async (req, res) => {
   try {
-    const historiales = await Historial.findAll();
+    const historiales = await Historial.findAll({
+      order: [['id', 'ASC']]
+    });
     res.status(200).json(historiales);
   } catch (error) {
     res.status(500).json({ error: error.message });
