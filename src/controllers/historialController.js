@@ -35,7 +35,9 @@ exports.createHistorial = async (req, res) => {
       diagnostico: req.body.diagnostico, 
       cita: req.body.cita, 
       doctorAtendio: req.body.doctorAtendio, 
-      fechaHistorial: req.body.fechaHistorial
+      fechaHistorial: req.body.fechaHistorial,
+      receta : req.body.receta,
+      recomendacion: req.body.recomendacion
     });
     
     res.status(201).json(newHistorial);
