@@ -14,7 +14,7 @@ exports.createHistorial = async (req, res) => {
 
     const newHistorial = await Historial.create({ nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion });
     // Crear un HistorialFecha inicial asociado al nuevo Historial
-    await HistorialFecha.create({
+    const historialFecha = await HistorialFecha.create({
       idH: newHistorial.id,
       nombreMascota,
       raza,
@@ -25,22 +25,26 @@ exports.createHistorial = async (req, res) => {
       carnetIdentidad,
       telefono,
       direccion,
-      peso: req.body.peso, 
-      castrado: req.body.castrado, 
+      peso: req.body.peso,
+      castrado: req.body.castrado,
       esterilizado: req.body.esterilizado,
-      seniaParticular: req.body.seniaParticular, 
-      anamnesis: req.body.anamnesis, 
-      sintomasSignos: req.body.sintomasSignos, 
-      tratamiento: req.body.tratamiento, 
-      diagnostico: req.body.diagnostico, 
-      cita: req.body.cita, 
-      doctorAtendio: req.body.doctorAtendio, 
+      seniaParticular: req.body.seniaParticular,
+      anamnesis: req.body.anamnesis,
+      sintomasSignos: req.body.sintomasSignos,
+      tratamiento: req.body.tratamiento,
+      diagnostico: req.body.diagnostico,
+      cita: req.body.cita,
+      doctorAtendio: req.body.doctorAtendio,
       fechaHistorial: req.body.fechaHistorial,
-      receta : req.body.receta,
+      receta: req.body.receta,
       recomendacion: req.body.recomendacion
     });
-    
-    res.status(201).json(newHistorial);
+
+    res.status(201).json({
+      historialId: newHistorial.id,
+      historialFechaId: historialFecha.id,
+      message: 'Historial creado correctamente'
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

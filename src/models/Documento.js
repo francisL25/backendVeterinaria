@@ -30,7 +30,7 @@ const Documento = sequelize.define('documentos', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: HistorialFecha,
+      model: 'historialFecha', // **nombre exacto de la tabla en la DB**
       key: 'id',
     },
     onDelete: 'CASCADE',

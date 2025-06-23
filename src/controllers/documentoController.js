@@ -6,33 +6,44 @@ const HistorialFecha = require('../models/HistorialFecha');
 const createDocumento = async (req, res) => {
   try {
     const { historial_id } = req.body;
-    const archivo = req.file;
-    console.log('Archivo recibido:', archivo);
-    console.log('Historial ID:', historial_id);
+    const archivos = req.files;
 
-    if (!archivo || !historial_id) {
-      return res.status(400).json({ error: 'Faltan datos requeridos' });
+    console.log('Archivos recibidos:', archivos?.length || 0);
+    console.log('Historial ID recibido:', historial_id);
+    console.log('Datos del request:', req.body);
+
+    if (!archivos?.length || !historial_id) {
+      return res.status(400).json({ error: 'Faltan archivos o historial_id' });
     }
-    const historial = await HistorialFecha.findByPk(historial_id);
-    console.log(JSON.stringify(historial, null, 2));
 
-    
+    const historial = await HistorialFecha.findByPk(historial_id);
     if (!historial) {
       return res.status(404).json({ error: 'Historial no encontrado' });
     }
+    console.log('Creando documento con historial_id:', historial_id);
+    const documentosGuardados = await Promise.all(
+      archivos.map((archivo) =>
+        Documento.create({
+          nombre: archivo.originalname,
+          tipo_contenido: archivo.mimetype,
+          archivo: archivo.buffer,
+          historial_id,
+          
+        })
+      )
+    );
 
-    const nuevo = await Documento.create({
-      nombre: archivo.originalname,
-      tipo_contenido: archivo.mimetype,
-      archivo: archivo.buffer,
-      historial_id,
+    res.status(201).json({
+      mensaje: 'Documentos guardados correctamente',
+      documentos: documentosGuardados,
     });
-
-    res.status(201).json({ mensaje: 'Documento guardado', documento: nuevo });
   } catch (error) {
-    res.status(500).json({ error: 'Error al guardar documento' });
+    console.error('Error al guardar documentos:', error);
+    res.status(500).json({ error: 'Error al guardar documentos' });
   }
 };
+
+
 
 const getDocumentos = async (req, res) => {
   try {

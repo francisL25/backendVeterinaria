@@ -5,7 +5,8 @@ const authMiddleware = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // Crear documento con PDF (POST)
-router.post('/', authMiddleware, upload.single('archivo'), documentoController.createDocumento);
+router.post('/', authMiddleware, upload.array('documentos', 10), documentoController.createDocumento);
+
 
 // Obtener todos los documentos (GET)
 router.get('/', authMiddleware, documentoController.getDocumentos);
