@@ -41,7 +41,7 @@ exports.createHistorial = async (req, res) => {
     });
 
     res.status(201).json({
-      historialId: newHistorial.id,
+      
       historialFechaId: historialFecha.id,
       message: 'Historial creado correctamente'
     });

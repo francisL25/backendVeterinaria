@@ -14,10 +14,6 @@ const Documento = sequelize.define('documentos', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  archivo: {
-    type: DataTypes.BLOB('long'), // BYTEA en PostgreSQL
-    allowNull: false,
-  },
   tipo_contenido: {
     type: DataTypes.STRING(100),
     allowNull: false,
@@ -30,10 +26,13 @@ const Documento = sequelize.define('documentos', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'historialFecha', // **nombre exacto de la tabla en la DB**
+      model: HistorialFecha, // **nombre exacto de la tabla en la DB**
       key: 'id',
     },
     onDelete: 'CASCADE',
+  },
+  ruta_archivo: {
+    type: DataTypes.TEXT
   },
 }, {
   tableName: 'documentos',

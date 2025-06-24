@@ -4,20 +4,22 @@ const documentoController = require('../controllers/documentoController');
 const authMiddleware = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
-// Crear documento con PDF (POST)
+// Crear documento con archivos PDF
 router.post('/', authMiddleware, upload.array('documentos', 10), documentoController.createDocumento);
 
-
-// Obtener todos los documentos (GET)
+// Obtener todos los documentos
 router.get('/', authMiddleware, documentoController.getDocumentos);
 
-// Obtener un documento por ID (GET)
-router.get('/:id', authMiddleware, documentoController.getDocumentoById);
+// Obtener documentos por historial_id
+router.get('/historial/:historial_id', authMiddleware, documentoController.getDocumentosPorHistorial);
 
-// Descargar archivo PDF por ID (GET)
+// Descargar archivo PDF por ID
 router.get('/descargar/:id', authMiddleware, documentoController.descargarDocumento);
 
-// Eliminar documento (DELETE)
+// Obtener un documento por ID
+router.get('/:id', authMiddleware, documentoController.getDocumentoById);
+
+// Eliminar documento
 router.delete('/:id', authMiddleware, documentoController.deleteDocumento);
 
 module.exports = router;

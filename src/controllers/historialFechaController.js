@@ -91,7 +91,10 @@ exports.createHistorialFecha = async (req, res) => {
       recomendacion
     });
 
-    return res.status(201).json(nuevoHistorialFecha);
+    return res.status(201).json({
+      historialFechaId: nuevoHistorialFecha.id,
+      message: 'Historial creado correctamente'
+    });
   } catch (error) {
     console.error('Error al crear HistorialFecha:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
