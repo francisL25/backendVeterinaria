@@ -1,18 +1,20 @@
-# Usa una imagen liviana de Node.js
-FROM node:18-slim
+# Usamos una imagen oficial de Node.js
+FROM node:18-alpine
 
-# Establece el directorio de trabajo dentro del contenedor
+# Establecemos el directorio de trabajo
 WORKDIR /app
 
-# Copia los archivos de dependencias y los instala
+# Copiamos package.json y package-lock.json (si existe)
 COPY package*.json ./
-RUN npm install --omit=dev
 
-# Copia el resto del código fuente
+# Instalamos las dependencias
+RUN npm install --production
+
+# Copiamos todo el código de la app
 COPY . .
 
-# Expone el puerto definido en tu .env (5000 por defecto)
+# Exponemos el puerto que usas (5000)
 EXPOSE 5000
 
-# Comando para iniciar el backend
+# Comando para iniciar la app
 CMD ["npm", "start"]
