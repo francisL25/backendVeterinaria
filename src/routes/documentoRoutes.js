@@ -13,7 +13,10 @@ router.get('/', authMiddleware, documentoController.getDocumentos);
 // Obtener documentos por historial_id
 router.get('/historial/:historial_id', authMiddleware, documentoController.getDocumentosPorHistorial);
 
-// Descargar archivo PDF por ID
+// NUEVA RUTA: Ver documento en el navegador (inline)
+router.get('/ver/:id', authMiddleware, documentoController.verDocumento);
+
+// Descargar archivo PDF por ID (fuerza descarga)
 router.get('/descargar/:id', authMiddleware, documentoController.descargarDocumento);
 
 // Obtener un documento por ID

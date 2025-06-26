@@ -92,7 +92,7 @@ exports.deleteHistorial = async (req, res) => {
 exports.getAllHistoriales = async (req, res) => {
   try {
     const historiales = await Historial.findAll({
-      order: [['id', 'ASC']]
+      order: [['id', 'DESC']]
     });
     res.status(200).json(historiales);
   } catch (error) {

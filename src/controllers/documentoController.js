@@ -65,7 +65,31 @@ const getDocumentoById = async (req, res) => {
   }
 };
 
-// Descargar documento desde disco
+// NUEVA FUNCIÓN: Ver documento en el navegador (inline)
+const verDocumento = async (req, res) => {
+  try {
+    const doc = await Documento.findByPk(req.params.id);
+    if (!doc) return res.status(404).json({ error: 'Documento no encontrado' });
+
+    const rutaAbsoluta = path.join(__dirname, '..', doc.ruta_archivo);
+
+    if (!fs.existsSync(rutaAbsoluta)) {
+      return res.status(404).json({ error: 'Archivo no encontrado en el servidor' });
+    }
+
+    // Configurar headers para mostrar en el navegador
+    res.setHeader('Content-Type', doc.tipo_contenido || 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${doc.nombre}"`);
+    
+    // Enviar el archivo para visualización
+    res.sendFile(rutaAbsoluta);
+  } catch (error) {
+    console.error('Error al mostrar documento:', error);
+    res.status(500).json({ error: 'Error al mostrar documento' });
+  }
+};
+
+// Descargar documento desde disco (fuerza descarga)
 const descargarDocumento = async (req, res) => {
   try {
     const doc = await Documento.findByPk(req.params.id);
@@ -77,6 +101,7 @@ const descargarDocumento = async (req, res) => {
       return res.status(404).json({ error: 'Archivo no encontrado en el servidor' });
     }
 
+    // Fuerza la descarga del archivo
     res.download(rutaAbsoluta, doc.nombre);
   } catch (error) {
     console.error('Error al descargar documento:', error);
@@ -120,13 +145,14 @@ const getDocumentosPorHistorial = async (req, res) => {
       return res.status(404).json({ error: 'No se encontraron documentos para este historial' });
     }
 
-    // Devuelve solo los metadatos + ruta de descarga
+    // Devuelve metadatos + rutas para ver y descargar
     const documentosConRuta = documentos.map((doc) => ({
       id: doc.id,
       nombre: doc.nombre,
       ruta_archivo: doc.ruta_archivo,
       tipo_contenido: doc.tipo_contenido,
-      url_descarga: `/api/documentos/${doc.id}/descargar`,
+      url_ver: `/api/documentos/ver/${doc.id}`,
+      url_descarga: `/api/documentos/descargar/${doc.id}`,
     }));
 
     res.json(documentosConRuta);
@@ -140,6 +166,7 @@ module.exports = {
   createDocumento,
   getDocumentos,
   getDocumentoById,
+  verDocumento, // NUEVA FUNCIÓN
   descargarDocumento,
   deleteDocumento,
   getDocumentosPorHistorial,

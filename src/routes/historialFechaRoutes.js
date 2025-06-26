@@ -6,6 +6,7 @@ const authMiddleware = require('../middleware/auth');
 // ✅ Rutas específicas primero
 router.get('/idH/:idH', authMiddleware, historialFechaController.getHistorialesByIdH);
 router.get('/ultimo/:idH', authMiddleware, historialFechaController.getUltimoHistorialFechaByIdH);
+router.get('/por-fecha', authMiddleware, historialFechaController.getCitasPorFecha); // 🔹 Nueva ruta
 
 // ✅ Rutas generales después
 router.get('/', authMiddleware, historialFechaController.getAllHistorialFechas);

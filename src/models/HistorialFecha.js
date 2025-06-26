@@ -80,7 +80,7 @@ const HistorialFecha = sequelize.define('HistorialFecha', {
   },
   cita: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true
   },
   doctorAtendio: {
     type: DataTypes.STRING(60)
