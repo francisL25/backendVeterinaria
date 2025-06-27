@@ -13,7 +13,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: 'http://192.168.1.64:3000', // IP y puerto del frontend React
+  origin: '*', // IP y puerto del frontend React
   credentials: true
 }));
 
