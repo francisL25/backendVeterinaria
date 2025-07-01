@@ -29,33 +29,7 @@ exports.createHistorialFecha = async (req, res) => {
       receta,
       recomendacion
     } = req.body;
-
-    // Validación de campos obligatorios
-    const camposObligatorios = {
-      idH,
-      nombreMascota,
-      raza,
-      especie,
-      sexo,
-      nombreDueno,
-      carnetIdentidad,
-      telefono,
-      direccion,
-      peso,
-      castrado,
-      esterilizado,
-      fechaHistorial
-    };
-
-    const camposFaltantes = Object.entries(camposObligatorios)
-      .filter(([_, valor]) => valor === undefined || valor === null || valor === '')
-      .map(([clave]) => clave);
-
-    if (camposFaltantes.length > 0) {
-      return res.status(400).json({
-        error: `Los siguientes campos son obligatorios: ${camposFaltantes.join(', ')}`
-      });
-    }
+    console.log('Creando nuevo HistorialFecha con datos:', req.body);
 
     // Validar existencia de historial principal
     const historial = await Historial.findByPk(idH);

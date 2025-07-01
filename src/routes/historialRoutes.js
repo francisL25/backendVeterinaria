@@ -5,6 +5,7 @@ const authMiddleware = require('../middleware/auth');
 
 
 router.get('/search', authMiddleware, historialController.searchHistorialByText);
+router.get('/busqueda/dueno', authMiddleware, historialController.searchDuenosByText);
 router.post('/', authMiddleware, historialController.createHistorial);
 router.get('/:id', authMiddleware, historialController.getHistorial);
 router.put('/:id', authMiddleware, historialController.updateHistorial);
