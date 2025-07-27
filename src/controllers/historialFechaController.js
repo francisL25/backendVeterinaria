@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const HistorialFecha = require('../models/HistorialFecha');
 const Historial = require('../models/Historial');
+const Documento = require('../models/Documento');
 
 exports.createHistorialFecha = async (req, res) => {
   try {
@@ -88,6 +89,7 @@ exports.getHistorialFecha = async (req, res) => {
 exports.updateHistorialFecha = async (req, res) => {
   try {
     const { idH, nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion, peso, castrado, esterilizado, seniaParticular, anamnesis, sintomasSignos, tratamiento, diagnostico, cita, doctorAtendio, fechaHistorial, receta, recomendacion } = req.body;
+    console.log(fechaHistorial);
     const historialFecha = await HistorialFecha.findByPk(req.params.id);
     if (!historialFecha) return res.status(404).json({ message: 'HistorialFecha no encontrado' });
 
@@ -134,22 +136,36 @@ exports.getHistorialesByIdH = async (req, res) => {
   try {
     const { idH } = req.params;
 
-    // Validar que se proporcione un idH
     if (!idH) {
       return res.status(400).json({ error: 'El parámetro idH es obligatorio' });
     }
 
-    // Buscar todos los HistorialFecha asociados al idH
-    const historialFechas = await HistorialFecha.findAll({
+    // 1. Buscás todos los historiales con ese idH
+    const historiales = await HistorialFecha.findAll({
       where: { idH },
-      order: [['fechaHistorial', 'DESC']]
+      order: [['fechaHistorial', 'DESC']],
     });
 
-    if (historialFechas.length === 0) {
+    if (historiales.length === 0) {
       return res.status(404).json({ message: 'No se encontraron historiales para el idH proporcionado' });
     }
 
-    res.status(200).json(historialFechas);
+    // 2. Para cada historial, buscás documentos relacionados
+    const historialesConDocs = await Promise.all(
+      historiales.map(async historial => {
+        const documentos = await Documento.findAll({
+          where: { historial_id: historial.id },
+          attributes: ['nombre'],
+        });
+
+        // Convertir a JSON plano para agregar documentos
+        const historialJSON = historial.toJSON();
+        historialJSON.documentos = documentos;
+        return historialJSON;
+      })
+    );
+
+    res.status(200).json(historialesConDocs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

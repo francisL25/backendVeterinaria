@@ -6,6 +6,10 @@ const historialRoutes = require('./routes/historialRoutes');
 const historialFechaRoutes = require('./routes/historialFechaRoutes');
 const authRoutes = require('./routes/authRoutes');
 const documentoRoutes = require('./routes/documentoRoutes');
+const productoRoutes = require('./routes/productosRoutes');
+const ingresoRoutes = require('./routes/productoIngresoRoutes');
+const ventaRoutes = require('./routes/ventasRoutes');
+const grupoRoutes = require('./routes/grupoRoutes');
 
 const app = express();
 
@@ -23,6 +27,10 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/historialFecha', historialFechaRoutes);
 app.use('/api/documentos', documentoRoutes);
+app.use('/api/productos', productoRoutes);
+app.use('/api/ingresos', ingresoRoutes);
+app.use('/api/ventas', ventaRoutes);
+app.use('/api/grupo', grupoRoutes);
 
 // Arranque del servidor
 const PORT = process.env.PORT || 5000;

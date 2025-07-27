@@ -5,10 +5,46 @@ const HistorialFecha = require('../models/HistorialFecha');
 exports.createHistorial = async (req, res) => {
   try {
     console.log('Creando nuevo historial con datos:', req.body);
-    const { nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion } = req.body;
+    const {
+      nombreMascota,
+      raza,
+      especie,
+      fechaNacimiento,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion
+    } = req.body;
 
-    const newHistorial = await Historial.create({ nombreMascota, raza, especie, fechaNacimiento, sexo, nombreDueno, carnetIdentidad, telefono, direccion });
-    // Crear un HistorialFecha inicial asociado al nuevo Historial
+    // Verificar si ya existe un historial con el mismo nombreMascota y nombreDueno
+    const historialExistente = await Historial.findOne({
+      where: {
+        nombreMascota: { [Op.iLike]: nombreMascota },
+        nombreDueno: { [Op.iLike]: nombreDueno }
+      }
+    });
+
+    if (historialExistente) {
+      return res.status(409).json({
+        message: 'Ya existe un historial con ese nombre de mascota y nombre de dueño.'
+      });
+    }
+
+    // Crear nuevo historial
+    const newHistorial = await Historial.create({
+      nombreMascota,
+      raza,
+      especie,
+      fechaNacimiento,
+      sexo,
+      nombreDueno,
+      carnetIdentidad,
+      telefono,
+      direccion
+    });
+
+    // Crear un HistorialFecha asociado
     const historialFecha = await HistorialFecha.create({
       idH: newHistorial.id,
       nombreMascota,
@@ -34,6 +70,7 @@ exports.createHistorial = async (req, res) => {
       receta: req.body.receta,
       recomendacion: req.body.recomendacion
     });
+
     res.status(201).json({
       historialFechaId: historialFecha.id,
       message: 'Historial creado correctamente'
