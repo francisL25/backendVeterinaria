@@ -110,6 +110,33 @@ const buscarProductosPorTexto = async (req, res) => {
   }
 };
 
+// Actualizar producto
+const actualizarProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, fecha_vencimiento, precio_unitario, stock, id_grupo } = req.body;
+
+    const producto = await Producto.findByPk(id);
+    if (!producto) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    producto.nombre = nombre || producto.nombre;
+    producto.fecha_vencimiento = fecha_vencimiento || producto.fecha_vencimiento;
+    producto.precio_unitario = precio_unitario || producto.precio_unitario;
+    //producto.stock = stock || producto.stock;
+    producto.id_grupo = id_grupo || producto.id_grupo;
+
+    await producto.save();
+
+    res.json({ message: 'Producto actualizado correctamente', producto });
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+    res.status(500).json({ error: 'Error al actualizar producto' });
+  }
+};
+
+
 
 module.exports = {
   crearProducto,
@@ -117,4 +144,5 @@ module.exports = {
   obtenerProductoPorId,
   eliminarProducto,
   buscarProductosPorTexto,
+  actualizarProducto,
 };

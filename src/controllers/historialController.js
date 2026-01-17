@@ -116,10 +116,25 @@ exports.deleteHistorial = async (req, res) => {
 
 exports.getAllHistoriales = async (req, res) => {
   try {
-    const historiales = await Historial.findAll({
-      order: [['id', 'DESC']]
+    // Parsear parámetros con valores por defecto
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    // Buscar y contar
+    const { count, rows } = await Historial.findAndCountAll({
+      order: [['id', 'DESC']],
+      limit,
+      offset,
     });
-    res.status(200).json(historiales);
+
+    // Devolver datos + total para paginación
+    res.status(200).json({
+      total: count,
+      items: rows,
+      page,
+      totalPages: Math.ceil(count / limit),
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -142,7 +157,8 @@ exports.searchHistorialByText = async (req, res) => {
           { telefono: { [Op.iLike]: `%${texto}%` } },
           { direccion: { [Op.iLike]: `%${texto}%` } }
         ]
-      }
+      },
+      order: [['createdAt', 'DESC']]
     });
     if (historiales.length === 0) {
       return res.status(404).json({ message: 'No se encontraron historiales con el texto proporcionado' });

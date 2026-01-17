@@ -8,5 +8,6 @@ router.get('/', authMiddleware, productoController.obtenerProductos);
 router.get('/buscar', authMiddleware, productoController.buscarProductosPorTexto);
 router.get('/:id', authMiddleware, productoController.obtenerProductoPorId);
 router.delete('/:id', authMiddleware, productoController.eliminarProducto);
+router.put('/:id', authMiddleware, productoController.actualizarProducto);
 
 module.exports = router;
