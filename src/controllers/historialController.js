@@ -82,13 +82,29 @@ exports.createHistorial = async (req, res) => {
 
 exports.getHistorial = async (req, res) => {
   try {
-    const historial = await Historial.findByPk(req.params.id);
-    if (!historial) return res.status(404).json({ message: 'Historial no encontrado' });
-    res.json(historial);
+    const { id } = req.params;
+
+    if (isNaN(id)) {
+      return res.status(400).json({
+        error: 'El ID debe ser un número válido'
+      });
+    }
+
+    const historial = await Historial.findByPk(id);
+
+    if (!historial) {
+      return res.status(404).json({
+        message: 'Historial no encontrado'
+      });
+    }
+
+    res.status(200).json(historial);
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.updateHistorial = async (req, res) => {
   try {
